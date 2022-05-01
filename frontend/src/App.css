@@ -57,3 +57,16 @@ button:disabled {
   opacity: 0.5;
   cursor: default;
 }
+
+.tweets {
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+}
+
+.tweet {
+  background-color: rgb(231, 231, 231);
+  padding: 10px;
+  margin: 20px;
+  border-radius: 15px;
+}
