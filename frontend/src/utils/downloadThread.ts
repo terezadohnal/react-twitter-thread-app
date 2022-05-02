@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from "axios";
-import { Tweet } from "../models/tweet";
+import { Reply } from "../models/tweet";
 
 const downloadThread = async (id: string) => {
-  const response = await axios.get<Tweet[]>(`/conversation/${id}`);
+  const response = await axios.get<Reply[]>(`/conversation/${id}`);
   const { data } = response;
   return data;
 };

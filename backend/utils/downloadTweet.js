@@ -14,7 +14,7 @@ const downloadTweet = async (id) => {
 
     const { data } = response;
 
-    return data.data;
+    return data.data[0];
   } catch (error) {
     console.log(error);
   }
