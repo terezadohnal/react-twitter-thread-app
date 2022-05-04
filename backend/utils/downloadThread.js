@@ -13,13 +13,11 @@ const downloadThread = async (id) => {
       tweets.push(...nextResponse.data);
       nextToken = nextResponse.meta.next_token;
     }
+    const clearedTweets = await clearTweets(tweets);
+    return clearedTweets;
   } catch (error) {
     console.log(error);
   }
-
-  const clearedTweets = clearTweets(tweets);
-
-  return clearedTweets;
 };
 
 module.exports = downloadThread;

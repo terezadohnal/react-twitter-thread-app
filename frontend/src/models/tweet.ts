@@ -5,4 +5,5 @@ export interface Tweet {
 
 export interface Reply extends Tweet {
   clearedTweet: string;
+  lemma?: string;
 }

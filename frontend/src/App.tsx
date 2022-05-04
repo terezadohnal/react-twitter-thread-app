@@ -11,7 +11,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [tweet, setTweet] = useState<Tweet | null>(null);
   const [replies, setReplies] = useState<Reply[]>([]);
-  const [topics, setTopics] = useState<Topics>([]);
+  const [lemmaTopics, setLemmaTopics] = useState<Topics>([]);
+  const [clearedTopics, setClearedTopics] = useState<Topics>([]);
 
   const updateId = (event: FormEvent<HTMLInputElement>) => {
     setId(event.currentTarget.value);
@@ -19,6 +20,10 @@ function App() {
 
   const downloadData = async () => {
     setLoading(true);
+    setTweet(null);
+    setReplies([]);
+    setLemmaTopics([]);
+    setClearedTopics([]);
     const tw = await downloadTweet(id);
     const data = await dowloadThread(id);
     setTweet(tw);
@@ -29,8 +34,9 @@ function App() {
 
   const handleAnalysis = async () => {
     setLoading(true);
-    const data = await analyzeTopics(replies);
-    setTopics(data);
+    const { dataLemma, dataCleared } = await analyzeTopics(replies);
+    setLemmaTopics(dataLemma);
+    setClearedTopics(dataCleared);
     setLoading(false);
   };
 
@@ -60,10 +66,20 @@ function App() {
           </button>
         ) : null}
 
-        {tweet && topics.length ? (
+        {tweet && lemmaTopics.length ? (
           <div>
-            {topics.map((topic) => (
-              <p>{topic.join(", ")}</p>
+            <h5>Lemma tweets</h5>
+            {lemmaTopics.map((topic) => (
+              <p key={topic.join(" ")}>{topic.join(", ")}</p>
+            ))}
+          </div>
+        ) : null}
+
+        {tweet && clearedTopics.length ? (
+          <div>
+            <h5>Cleared Tweets</h5>
+            {clearedTopics.map((topic) => (
+              <p key={topic.join(" ")}>{topic.join(", ")}</p>
             ))}
           </div>
         ) : null}
@@ -75,6 +91,7 @@ function App() {
               <div key={reply.id}>
                 <p>Puvodni: {reply.text}</p>
                 <p>Upraveny: {reply.clearedTweet}</p>
+                {reply.lemma ? <p>Lemma: {reply.lemma}</p> : null}
               </div>
             ))}
           </>
