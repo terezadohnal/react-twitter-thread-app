@@ -67,7 +67,7 @@ function App() {
         ) : null}
 
         {tweet && lemmaTopics.length ? (
-          <div>
+          <div className="topics">
             <h5>Lemma tweets</h5>
             {lemmaTopics.map((topic) => (
               <p key={topic.join(" ")}>{topic.join(", ")}</p>
@@ -76,7 +76,7 @@ function App() {
         ) : null}
 
         {tweet && clearedTopics.length ? (
-          <div>
+          <div className="topics">
             <h5>Cleared Tweets</h5>
             {clearedTopics.map((topic) => (
               <p key={topic.join(" ")}>{topic.join(", ")}</p>
@@ -88,10 +88,17 @@ function App() {
           <>
             <h2>Replies:</h2>
             {replies.map((reply) => (
-              <div key={reply.id}>
-                <p>Puvodni: {reply.text}</p>
-                <p>Upraveny: {reply.clearedTweet}</p>
-                {reply.lemma ? <p>Lemma: {reply.lemma}</p> : null}
+              <div key={reply.id} className="reply">
+                <h5>Puvodni:</h5>
+                <p> {reply.text}</p>
+                <h5>Upraveny:</h5>
+                <p> {reply.clearedTweet}</p>
+                {reply.lemma ? (
+                  <>
+                    <h5>Lemma:</h5>
+                    <p> {reply.lemma}</p>
+                  </>
+                ) : null}
               </div>
             ))}
           </>

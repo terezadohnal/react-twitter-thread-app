@@ -62,11 +62,39 @@ button:disabled {
   display: flex;
   flex-direction: column;
   width: 60%;
+  align-items: center;
 }
 
 .tweet {
-  background-color: rgb(231, 231, 231);
+  background-color: rgb(244, 244, 244);
   padding: 10px;
   margin: 20px;
   border-radius: 15px;
+}
+
+.reply {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 40px;
+  text-align: center;
+  border-radius: 15px;
+  background-color: #e4f5fb;
+  padding: 20px;
+  width: 100%;
+}
+
+.reply h5 {
+  margin: 15px 0 5px 0;
+}
+
+.reply h5:first-child {
+  margin-top: 0;
+}
+
+.reply p {
+  margin: 0;
+}
+
+.topics {
+  width: fit-content;
 }
