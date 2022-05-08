@@ -33,6 +33,10 @@ app.get("/user/:username", async (req, res) => {
   res.send(response);
 });
 
+app.get("/user/analyze", async (req, res) => {
+  res.send("ahoj");
+});
+
 app.post("/topics", async (req, res) => {
   const { text } = req.body;
   const topics = await analyzeTopics(text);

@@ -1,118 +1,98 @@
 import "./App.css";
 import { FormEvent, useState } from "react";
-import dowloadThread from "./utils/downloadThread";
-import downloadTweet from "./utils/dowloadTweet";
-import analyzeTopics from "./utils/analyzeTopics";
-import { Tweet, Reply } from "./models/tweet";
-import { Topics } from "./models/topics";
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import Stack from "@mui/material/Stack";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import LinearProgress from "@mui/material/LinearProgress";
+import AnalyticsOutlinedIcon from "@mui/icons-material/AnalyticsOutlined";
+import downloadUser from "./utils/downloadUser";
+import { User } from "./models/user";
+import { Tweet } from "./models/tweet";
+import UserHero from "./components/UserHero";
+import TweetList from "./components/TweetsList";
+import analyzeUserTweets from "./utils/analyzeUserTweets";
 
 function App() {
-  const [id, setId] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [tweet, setTweet] = useState<Tweet | null>(null);
-  const [replies, setReplies] = useState<Reply[]>([]);
-  const [lemmaTopics, setLemmaTopics] = useState<Topics>([]);
-  const [clearedTopics, setClearedTopics] = useState<Topics>([]);
+  const [username, setUsername] = useState("");
+  const [downloading, setDownloading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [tweets, setTweets] = useState<Tweet[] | null>(null);
 
-  const updateId = (event: FormEvent<HTMLInputElement>) => {
-    setId(event.currentTarget.value);
+  const updateUsername = (
+    event: FormEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setUsername(event.currentTarget.value);
   };
 
-  const downloadData = async () => {
-    setLoading(true);
-    setTweet(null);
-    setReplies([]);
-    setLemmaTopics([]);
-    setClearedTopics([]);
-    const tw = await downloadTweet(id);
-    const data = await dowloadThread(id);
-    setTweet(tw);
-    setReplies(data);
-    setLoading(false);
-    setId("");
+  const handleDownloadUser = async () => {
+    setDownloading(true);
+    const response = await downloadUser({ username });
+    const { user, tweets } = response;
+    setUser(user);
+    setTweets(tweets);
+    setDownloading(false);
+    setUsername("");
   };
 
   const handleAnalysis = async () => {
-    setLoading(true);
-    const { dataLemma, dataCleared } = await analyzeTopics(replies);
-    setLemmaTopics(dataLemma);
-    setClearedTopics(dataCleared);
-    setLoading(false);
+    setAnalyzing(true);
+    const ids = tweets?.map((tweet) => tweet.id);
+    if (ids) {
+      const response = await analyzeUserTweets({ ids });
+    }
+
+    setAnalyzing(false);
   };
 
   return (
-    <div className="App">
-      <h1>Tweet App</h1>
-      <input
-        type="text"
-        value={id}
-        onChange={updateId}
-        placeholder="Enter ID"
-      />
-      <button onClick={downloadData} disabled={loading}>
-        {loading ? "Downloading.." : "Download Thread"}
-      </button>
-
-      <div className="tweets">
-        {tweet ? (
-          <div className="tweet">
-            <h2>Tweet: </h2> <br /> <h3>{tweet.text}</h3>
-          </div>
-        ) : null}
-
-        {tweet ? (
-          <button onClick={handleAnalysis} disabled={loading}>
-            {loading ? "Analyzing.." : "Analyze Topics"}
-          </button>
-        ) : null}
-
-        {tweet && lemmaTopics.length ? (
-          <div className="topics">
-            <h5>Lemma tweets</h5>
-            {lemmaTopics.map((topic) => (
-              <p key={topic.join(" ")}>{topic.join(", ")}</p>
-            ))}
-          </div>
-        ) : null}
-
-        {tweet && clearedTopics.length ? (
-          <div className="topics">
-            <h5>Cleared Tweets</h5>
-            {clearedTopics.map((topic) => (
-              <p key={topic.join(" ")}>{topic.join(", ")}</p>
-            ))}
-          </div>
-        ) : null}
-
-        {replies.length ? (
-          <>
-            <h2>Replies:</h2>
-            {replies.map((reply) => (
-              <div key={reply.id} className="reply">
-                <h5>Puvodni:</h5>
-                <p> {reply.text}</p>
-                <h5>Upraveny:</h5>
-                <p> {reply.clearedTweet}</p>
-                {reply.lemma ? (
-                  <>
-                    <h5>Lemma:</h5>
-                    <p> {reply.lemma}</p>
-                  </>
-                ) : null}
-              </div>
-            ))}
-          </>
-        ) : null}
-      </div>
-    </div>
+    <Container sx={{ padding: 10 }}>
+      <Box sx={{ width: 300, margin: "auto", marginBottom: 1 }}>
+        <Stack spacing={2} alignItems="center">
+          <Typography variant="h3" component="h3" sx={{ textAlign: "center" }}>
+            Tweet App
+          </Typography>
+          <TextField
+            required
+            id="username"
+            label="Username"
+            value={username}
+            onChange={updateUsername}
+            disabled={downloading}
+          />
+          <Button
+            variant="contained"
+            disabled={downloading}
+            onClick={handleDownloadUser}
+            endIcon={<TwitterIcon />}
+          >
+            {downloading ? "Downloading" : "Download"} tweets
+          </Button>
+          {downloading ? <LinearProgress /> : null}
+          {user ? <UserHero user={user} /> : null}
+        </Stack>
+      </Box>
+      {tweets ? (
+        <Stack spacing={2} alignItems="center">
+          <TweetList tweets={tweets} />
+          <Box>
+            <Button
+              variant="contained"
+              disabled={analyzing}
+              onClick={handleAnalysis}
+              endIcon={<AnalyticsOutlinedIcon />}
+            >
+              {analyzing ? "Analyzing.." : "Analyze"}
+            </Button>
+          </Box>
+        </Stack>
+      ) : null}
+    </Container>
   );
 }
 
 export default App;
-
-// button "Analyzovat tema"
-// -> napojit funkce "handleAnalysis"
-//   -> state, kdy se stahuji data z API (ten co uz mam)
-//   -> volam funkci "analyzeTopics"
-//     -> vlozim do ni pole replies
-//     -> uvnitr funkce vytvorim string a zavolam endpoint
