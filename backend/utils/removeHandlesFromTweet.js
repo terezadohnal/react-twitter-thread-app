@@ -1,8 +1,18 @@
 const removeHandlesFromTweet = (tweet) => {
-  const words = tweet.split(" ");
-  const removedWords = words.filter((word) => !(word.split("").at(0) === "@"));
+  const words = tweet.split(' ');
+  if (!words.length) {
+    return tweet;
+  }
 
-  return removedWords.join(" ");
+  const removedWords = words.filter((word) => {
+    if (typeof word !== 'string') {
+      return false;
+    }
+
+    return !(word.split('')[0] === '@');
+  });
+
+  return removedWords.join(' ');
 };
 
 module.exports = removeHandlesFromTweet;
