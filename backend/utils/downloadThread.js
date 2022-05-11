@@ -3,8 +3,14 @@ const clearTweets = require("../utils/clearTweets");
 
 const downloadThread = async (id) => {
   const tweets = [];
+
   try {
     const response = await downloadTweets(id);
+
+    if (!response.data) {
+      return [];
+    }
+
     tweets.push(...response.data);
     let nextToken = response.meta.next_token;
 
@@ -13,10 +19,12 @@ const downloadThread = async (id) => {
       tweets.push(...nextResponse.data);
       nextToken = nextResponse.meta.next_token;
     }
-    const clearedTweets = await clearTweets(tweets);
-    return clearedTweets;
+
+    return !!tweets.length ? clearTweets(tweets) : [];
   } catch (error) {
     console.log(error);
+
+    return !!tweets.length ? clearTweets(tweets) : [];
   }
 };
 

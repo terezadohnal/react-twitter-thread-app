@@ -11,26 +11,26 @@ const removeWords = (tweet) => {
   return clearedTweet;
 };
 
-const clearTweets = async (tweets) => {
-  const clearedTweets = [];
+const clearTweets = (tweets) => {
+  // const clearedTweets = [];
   const filteredTweets = tweets.map((tweet) => ({
     ...tweet,
     clearedTweet: removeWords(tweet.text),
   }));
-  let index = 0;
+  return filteredTweets;
+  // let index = 0;
+  // try {
+  //   while (index < filteredTweets.length) {
+  //     const lemma = await lemmaText(filteredTweets[index].clearedTweet);
+  //     clearedTweets.push({ ...filteredTweets[index], lemma });
+  //     index++;
+  //   }
 
-  try {
-    while (index < filteredTweets.length) {
-      const lemma = await lemmaText(filteredTweets[index].clearedTweet);
-      clearedTweets.push({ ...filteredTweets[index], lemma });
-      index++;
-    }
-
-    return clearedTweets;
-  } catch (error) {
-    console.log("Lemma goes wrong!", error);
-    return filteredTweets;
-  }
+  //   return clearedTweets;
+  // } catch (error) {
+  //   console.log("Lemma goes wrong!", error);
+  //   return filteredTweets;
+  // }
 };
 
 module.exports = clearTweets;

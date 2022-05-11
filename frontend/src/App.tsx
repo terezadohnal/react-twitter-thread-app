@@ -10,11 +10,13 @@ import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
 import AnalyticsOutlinedIcon from "@mui/icons-material/AnalyticsOutlined";
 import downloadUser from "./utils/downloadUser";
+import analyzeUserTweets from "./utils/analyzeUserTweets";
 import { User } from "./models/user";
 import { Tweet } from "./models/tweet";
+import { Topics } from "./models/topics";
 import UserHero from "./components/UserHero";
 import TweetList from "./components/TweetsList";
-import analyzeUserTweets from "./utils/analyzeUserTweets";
+import TopicLine from "./components/TopicLine";
 
 function App() {
   const [username, setUsername] = useState("");
@@ -22,6 +24,8 @@ function App() {
   const [analyzing, setAnalyzing] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [tweets, setTweets] = useState<Tweet[] | null>(null);
+  const [topics, setTopics] = useState<Topics | null>(null);
+  const [tweetCount, setTweetCount] = useState<number>(0);
 
   const updateUsername = (
     event: FormEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -30,6 +34,9 @@ function App() {
   };
 
   const handleDownloadUser = async () => {
+    setUser(null);
+    setTweets(null);
+    setTopics(null);
     setDownloading(true);
     const response = await downloadUser({ username });
     const { user, tweets } = response;
@@ -40,12 +47,14 @@ function App() {
   };
 
   const handleAnalysis = async () => {
+    setTopics(null);
     setAnalyzing(true);
     const ids = tweets?.map((tweet) => tweet.id);
     if (ids) {
-      const response = await analyzeUserTweets({ ids });
+      const { topics, tweetCount } = await analyzeUserTweets({ ids });
+      setTopics(topics);
+      setTweetCount(tweetCount);
     }
-
     setAnalyzing(false);
   };
 
@@ -89,6 +98,24 @@ function App() {
               {analyzing ? "Analyzing.." : "Analyze"}
             </Button>
           </Box>
+        </Stack>
+      ) : null}
+      <Box sx={{ padding: 5 }}>{analyzing ? <LinearProgress /> : null}</Box>
+
+      {topics ? (
+        <Stack spacing={2} alignItems="center" padding={5}>
+          <Typography variant="h5" component="h5">
+            Topics:
+          </Typography>
+          {topics.map((topic) => (
+            <TopicLine topic={topic} key={topic[0]} />
+          ))}
+          <Typography variant="h5" component="h5">
+            Number of analyzed tweets:
+          </Typography>
+          <Typography variant="h6" component="h6">
+            {tweetCount}
+          </Typography>
         </Stack>
       ) : null}
     </Container>

@@ -7,6 +7,7 @@ const downloadTweet = require("./utils/downloadTweet");
 const downloadUser = require("./utils/downloadUser");
 const analyzeTopics = require("./utils/analyzeTopics");
 const downloadUserTweets = require("./utils/downloadUserTweets");
+const analyzeUserTweets = require("./utils/analyzeUserTweets");
 
 app.use(express.json());
 
@@ -33,8 +34,11 @@ app.get("/user/:username", async (req, res) => {
   res.send(response);
 });
 
-app.get("/user/analyze", async (req, res) => {
-  res.send("ahoj");
+app.post("/user/analyze", async (req, res) => {
+  const { ids } = req.body;
+  const response = await analyzeUserTweets({ ids });
+  console.log(response);
+  res.send(response);
 });
 
 app.post("/topics", async (req, res) => {
