@@ -1,5 +1,5 @@
-const axios = require("axios");
-const removeLinksFromTweet = require("./removeLinksFromTweet");
+const axios = require('axios');
+const removeLinksFromTweet = require('./removeLinksFromTweet');
 
 const downloadUserTweets = async (userID) => {
   try {
@@ -7,8 +7,7 @@ const downloadUserTweets = async (userID) => {
       `https://api.twitter.com/2/users/${userID}/tweets?&max_results=100&exclude=replies,retweets`,
       {
         headers: {
-          // Authorization: `Bearer ${process.env.token}`,
-          Authorization: `Bearer ${process.env["API_TOKEN"]}`,
+          Authorization: `Bearer ${process.env['API_TOKEN']}`,
         },
       }
     );
