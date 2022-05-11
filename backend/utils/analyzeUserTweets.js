@@ -31,7 +31,7 @@ const analyzeUserTweets = async ({ ids, username }) => {
       if (err) return console.log(err);
     });
 
-    const textWithNoStopWords = await removeStopWords(mergedTweets);
+    const textWithNoStopWords = await removeStopWords(mergedTweets, username);
 
     fs.writeFile(
       `${username}-text-no-stop-words-${now}.txt`,
